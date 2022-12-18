@@ -1,0 +1,43 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Список карт{% endblock %}
+
+{% block content %}
+<h1>Список карт</h1>
+
+{% if query_string %}
+<p>Результаты поиска по строке: {{query_string}}</p>
+{% endif %}
+
+<table class="table table-hover">
+    <thead>
+    <th scope="col">Серия</th>
+    <th scope="col">Номер</th>
+    <th scope="col">Дата выпуска</th>
+    <th scope="col">Дата окончания активности</th>
+    <th scope="col">Статус</th>
+    <th></th>
+    </thead>
+
+{% for card in cards %}
+    <tr style="cursor: pointer">
+        <td>{{card.series}}</td>
+        <td>{{card.number}}</td>
+        <td>{{card.release_date}}</td>
+        <td>{{card.end_activity}}</td>
+        <td>{{card.status}}</td>
+        <td>
+            <a href="{% url 'card' card.pk %}" class="btn btn-sm btn-primary">
+                Подробнее
+            </a>
+        </td>
+    </tr>
+{% endfor %}
+
+</table>
+
+{% if len == 0 %}
+<p>Данные не найдены</p>
+{% endif %}
+
+{% endblock %}

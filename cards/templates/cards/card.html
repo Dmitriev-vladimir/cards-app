@@ -1,0 +1,91 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Карта пользователя{% endblock %}
+
+{% block content %}
+<h1>Детальная информация</h1>
+<div class="list-group list-group-horizontal w-50 mb-2">
+    <div class="list-group list-group-horizontal">
+        <span class="list-group-item me-2 fst-italic fw-light">Серия:</span>
+        <span class="list-group-item">{{card.series}}</span>
+    </div>
+    <div class="list-group list-group-horizontal w-100">
+        <span class="list-group-item me-2 fst-italic fw-light">Номер:</span>
+        <span class="list-group-item w-100">{{card.number}}</span>
+    </div>
+</div>
+<div class="w-50 mb-3">
+    <div class="list-group list-group-horizontal">
+        <span class="list-group-item me-2 w-75 fst-italic fw-light">Дата выпуска:</span>
+        <span class="list-group-item w-100">{{card.release_date}}</span>
+    </div>
+    <div class="list-group list-group-horizontal">
+        <span class="list-group-item me-2 w-75 fst-italic fw-light">Дата окончания активности:</span>
+        <span class="list-group-item w-100">{{card.end_activity}}</span>
+    </div>
+    <div class="list-group list-group-horizontal">
+        <span class="list-group-item me-2 w-75 fst-italic fw-light">Статус:</span>
+        <span class="list-group-item w-100">{{card.status}}</span>
+    </div>
+</div>
+<div class="btn-group mb-4">
+
+    <button class="btn btn-primary me-2" id="activity" style="width: 150px">
+        {% if card.status == 'активирована' %}
+            Деактивировать
+        {% else %}
+            Активировать
+        {% endif %}
+    </button>
+    <button class="btn btn-danger" id="delete">Удалить карту</button>
+</div>
+
+
+<h2 class="fs-4">Совершенные платежи</h2>
+<ul class="list-group">
+            <li class="list-group list-group-horizontal">
+            <span class="list-group-item w-25">Дата</span>
+            <span class="list-group-item w-25">Сумма платежа</span>
+        </li>
+
+    {% for payment in payments%}
+        <li class="list-group list-group-horizontal">
+            <span class="list-group-item w-25">{{payment.pay_date}}</span>
+            <span class="list-group-item w-25">{{payment.amount}}</span>
+        </li>
+
+    {% endfor %}
+
+</ul>
+
+{% endblock %}
+
+
+{% block script %}
+<script>
+    const csrf_token = document.getElementsByTagName('input')[0].value
+    pk = String(window.location).split('/').slice(-2, -1)[0]
+    document.getElementById('activity').addEventListener('click', () => {
+        fetch('/activity/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': `${ csrf_token }`,
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({card_pk: pk}),
+        }).then(() => window.location.reload())
+        console.log('in Listener activity')
+    })
+
+    document.getElementById('delete').addEventListener('click', () => {
+        fetch('/delete/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': `${ csrf_token }`,
+                'Content-type': 'application/json'
+            },
+            body: JSON.stringify({card_pk: pk}),
+        }).then(() => window.location.pathname = '/cards')
+    })
+</script>
+{% endblock %}
